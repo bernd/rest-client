@@ -121,6 +121,11 @@ module RestClient
 			display_log request_log
 
 			net.start do |http|
+				if payload.is_a?(File)
+					req.body_stream = payload
+					req.content_length = File.size(payload)
+					payload = nil
+				end
 				res = http.request(req, payload) { |http_response| fetch_body(http_response) }
 				result = process_result(res)
 				display_log response_log(res)
@@ -209,7 +214,11 @@ module RestClient
 		def request_log
 			out = []
 			out << "RestClient.#{method} #{url.inspect}"
-			out << (payload.size > 100 ? "(#{payload.size} byte payload)".inspect : payload.inspect) if payload
+			if payload.is_a?(File)
+				out << "(#{File.size(payload)} byte payload)".inspect
+			elsif payload
+				out << (payload.size > 100 ? "(#{payload.size} byte payload)".inspect : payload.inspect)
+			end
 			out << headers.inspect.gsub(/^\{/, '').gsub(/\}$/, '') unless headers.empty?
 			out.join(', ')
 		end

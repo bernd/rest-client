@@ -162,6 +162,16 @@ describe RestClient::Request do
 		@request.headers[:content_type].should == 'application/x-www-form-urlencoded'
 	end
 
+	it "accepts a File object as payload" do
+		@req = mock('net::http request')
+		@req.stub!(:body_stream=)
+		@req.stub!(:content_length=)
+		@http.should_receive(:request).with(@req, nil)
+		@request.should_receive(:process_result)
+		@request.stub!(:response_log)
+		@request.transmit(@uri, @req, File.open('/bin/sh'))
+	end
+
 	it "sets up the credentials prior to the request" do
 		@http.stub!(:request)
 		@request.stub!(:process_result)
