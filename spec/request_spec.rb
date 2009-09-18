@@ -169,7 +169,7 @@ describe RestClient::Request do
 		@http.should_receive(:request).with(@req, nil)
 		@request.should_receive(:process_result)
 		@request.stub!(:response_log)
-		@request.transmit(@uri, @req, File.open('/bin/sh'))
+		@request.transmit(@uri, @req, File.open('/dev/null'))
 	end
 
 	it "sets up the credentials prior to the request" do
